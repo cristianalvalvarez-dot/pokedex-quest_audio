@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex Quest - Mateo</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Fuente Retro Pokémon -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- PANTALLA DE INICIO / INTRO RETRO -->
+  <div id="splash-screen" class="splash-overlay">
+    <div id="audio-unlock-box" class="intro-box">
+      <div class="pokeball-intro-logo pulse"></div>
+      <h2 class="intro-text-flash">MATEO POKÉDEX</h2>
+      <p class="intro-subtext">⚡ PRESIONA PARA COMENZAR LA AVENTURA ⚡</p>
+      <button id="btn-unlock-audio" class="btn-retro start-btn">TOCA AQUÍ PARA EMPEZAR</button>
+    </div>
+
+    <div id="intro-animation-box" class="intro-box hidden">
+      <div class="pokeball-intro-logo pulse"></div>
+      <h2 class="intro-text-flash">MATEO POKÉDEX</h2>
+      <p class="intro-subtext">⚡ INICIANDO MISIÓN ESPECIAL... ⚡</p>
+    </div>
+
+    <div id="splash-card" class="splash-card hidden">
+      <div class="led-big-blue pulse"></div>
+      <h1 class="splash-title">MATEO POKÉDEX</h1>
+      <p class="splash-subtitle">Misión Especial de Entrenadores</p>
+      <p class="splash-subtitle party-tag">🎉 ¡¡BIENVENIDOS A MI FIESTA!! 🎉</p>
+      <button id="btn-start" class="btn-retro start-btn">PRESIONA START</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY DE CAPTURA ANIMADA (PANTALLA NEGRA) -->
+  <div id="capture-overlay" class="capture-overlay hidden">
+    <div class="capture-screen-content">
+      <div id="flash-effect" class="flash-effect"></div>
+      <div class="capture-status-text" id="capture-status-text">¡UN POKÉMON SILVESTRE APARECIÓ!</div>
+      
+      <div class="capture-sprite-box" id="capture-sprite-box">
+        <img id="capture-sprite" class="capture-sprite hidden" src="" alt="Pokémon Capturado">
+        <div id="pokeball-anim" class="pokeball hidden">
+          <div class="pokeball-button"></div>
+        </div>
+      </div>
+
+      <div class="capture-details-card" id="capture-details-card">
+        <h2 id="capture-pokemon-name" class="capture-pokemon-name">???</h2>
+        <p id="capture-pokemon-types" class="capture-info">Tipo: ---</p>
+        <p id="capture-pokemon-abilities" class="capture-info">Habilidades: ---</p>
+        <p id="capture-pokemon-evo" class="capture-info">Evolución: ---</p>
+      </div>
+
+      <button id="btn-close-capture" class="btn-retro btn-close-capture hidden">¡REGISTRAR EN POKÉDEX!</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE VICTORIA ÉPICA -->
+  <div id="victory-modal" class="victory-modal-overlay hidden">
+    <div class="victory-modal-card">
+      <div class="trophy-badge">🏆</div>
+      <h1 class="victory-gold-title">¡ENTRENADOR LEYENDA!</h1>
+      <p class="victory-subtitle">Escribe tu nombre para personalizar tu diploma oficial:</p>
+
+      <div class="trainer-input-group">
+        <label for="trainer-name">NOMBRE DEL ENTRENADOR:</label>
+        <input type="text" id="trainer-name" class="pokemon-font-input" value="INGRESA TU NOMBRE" maxlength="25" placeholder="TU NOMBRE">
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="victory-canvas" width="600" height="420"></canvas>
+      </div>
+
+      <div class="victory-actions">
+        <button id="btn-download-card" class="btn-retro btn-download">
+          🖼️ 1. DESCARGAR DIPLOMA VISUAL
+        </button>
+        <a id="whatsapp-share-btn" class="btn-retro btn-whatsapp" target="_blank" rel="noopener noreferrer">
+          🚀 2. ENVIAR A WHATSAPP
+        </a>
+      </div>
+      <button id="btn-close-victory" class="btn-close-modal">✕ Cerrar y ver Pokédex</button>
+    </div>
+  </div>
+
+  <!-- POKÉDEX PRINCIPAL -->
+  <main class="pokedex-container">
+    
+    <header class="pokedex-top">
+      <div class="main-led-container">
+        <div class="led-big-blue" id="main-led"></div>
+      </div>
+      <div class="small-leds">
+        <span class="led-small red"></span>
+        <span class="led-small yellow"></span>
+        <span class="led-small green"></span>
+      </div>
+    </header>
+
+    <div class="pokedex-body">
+      
+      <section class="panel panel-left">
+        <div class="screen-border">
+          <div class="screen-inner">
+            <div id="photo-viewer" class="photo-viewer">
+              <div id="viewer-placeholder" class="scanner-placeholder">
+                <div class="scanner-line"></div>
+                <span>ESCANER EN ESPERA...</span>
+              </div>
+              <img id="preview-img" class="preview-img hidden" alt="Previsualización">
+            </div>
+            <div id="led-status" class="status-indicator status-ready">
+              LISTO PARA FOTO
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-left">
+          <input type="file" id="qr-input" accept="image/*" capture="environment" class="hidden-input">
+          <button id="btn-trigger-camera" class="btn-retro btn-capture">
+           📲 CARGAR FOTO DEL QR
+          </button>
+        </div>
+      </section>
+
+      <div class="hinge"></div>
+
+      <section class="panel panel-right">
+        <div class="green-screen">
+          <div class="screen-header">
+            <h2 id="progress-counter">MISIÓN: 0/5</h2>
+          </div>
+          
+          <div id="slots-container" class="slots-container"></div>
+        </div>
+
+        <div id="victory-card" class="victory-card hidden">
+          <h3>🎉 ¡MISIÓN COMPLETADA! 🎉</h3>
+          <p>¡Has registrado los 5 Pokémon exitosamente!</p>
+          <button id="btn-reopen-victory" class="btn-retro btn-whatsapp">
+            🏆 Ver Diploma y Compartir
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
